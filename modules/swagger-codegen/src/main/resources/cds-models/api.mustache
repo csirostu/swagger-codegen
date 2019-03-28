@@ -1,0 +1,59 @@
+package {{invokerPackage}};
+
+import au.org.consumerdatastandards.support.*;
+import au.org.consumerdatastandards.support.security.EndpointAuth;
+import au.org.consumerdatastandards.support.security.EndpointAuthAccess;
+import au.org.consumerdatastandards.support.security.EndpointAuthType;
+
+import {{modelPackage}}.*;
+
+{{#imports}}import {{import}};
+{{/imports}}
+
+{{#operations}}
+public interface {{classname}}  {
+  /** 
+   * Automatically generated API Endpoint definition
+   */
+
+{{#operation}}
+    @Endpoint(
+        path = "/customer",
+        summary = "Get Customer",
+        description = "Obtain basic information on the customer that has authorised the current session",
+        requestMethod = RequestMethod.GET,
+        operationId = "getCustomer",
+        responses = {
+            @EndpointResponse(
+                responseCode = ResponseCode.OK,
+                description = "Success",
+                content = ResponseCommonCustomer.class
+            ),
+            @EndpointResponse(
+                responseCode = ResponseCode.UNAUTHORIZED,
+                description = "Unauthorized",
+                content = ErrorResponse.class
+            )
+        },
+        requiredAuth = {
+            @EndpointAuth(
+                type = EndpointAuthType.CDS_FAPI,
+                access = EndpointAuthAccess.READ_ONLY,
+                scopes = {
+                    Scope.COMMON_BASIC_CUSTOMER
+                }
+            )
+        }
+    )
+    ResponseCommonCustomer {{operationId}}();
+    
+  /*
+    public ResponseContext {{operationId}}(RequestContext request {{#allParams}}, {{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}}{{/allParams}}) {
+        return new ResponseContext().status(Status.INTERNAL_SERVER_ERROR).entity( "Not implemented" );
+    }
+  */
+
+{{/operation}}
+}
+{{/operations}}
+
