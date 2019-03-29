@@ -12,26 +12,27 @@ import {{modelPackage}}.*;
 
 {{#operations}}
 public interface {{classname}}  {
-  /** 
-   * Automatically generated API Endpoint definition
-   */
-
 {{#operation}}
     @Endpoint(
-        path = "/customer",
-        summary = "Get Customer",
-        description = "Obtain basic information on the customer that has authorised the current session",
-        requestMethod = RequestMethod.GET,
-        operationId = "getCustomer",
+        path = "/{{{baseName}}}"
+        summary = "{{ summary }}",
+        description = "{{notes}}",
+        requestMethod = RequestMethod.{{ httpMethod }},
+        operationId = "{{nickname}}",
         responses = {
             @EndpointResponse(
                 responseCode = ResponseCode.OK,
-                description = "Success",
-                content = ResponseCommonCustomer.class
+                description = "Successful response for {{nickname}}",
+                content = {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}}.class
             ),
             @EndpointResponse(
                 responseCode = ResponseCode.UNAUTHORIZED,
-                description = "Unauthorized",
+                description = "Authorization header missing or invalid token",
+                content = ErrorResponse.class
+            ),
+            @EndpointResponse(
+                responseCode = ResponseCode.FORBIDDEN,
+                description = "Token has incorrect scope or a security policy was violated.",
                 content = ErrorResponse.class
             )
         },
@@ -45,15 +46,9 @@ public interface {{classname}}  {
             )
         }
     )
-    ResponseCommonCustomer {{operationId}}();
-    
-  /*
-    public ResponseContext {{operationId}}(RequestContext request {{#allParams}}, {{>queryParams}}{{>pathParams}}{{>headerParams}}{{>bodyParams}}{{>formParams}}{{/allParams}}) {
-        return new ResponseContext().status(Status.INTERNAL_SERVER_ERROR).entity( "Not implemented" );
-    }
-  */
-
+    {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}} {{operationId}}();
+   
 {{/operation}}
-}
+
 {{/operations}}
 
