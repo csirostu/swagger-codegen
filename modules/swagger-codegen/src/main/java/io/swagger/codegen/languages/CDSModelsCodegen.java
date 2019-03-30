@@ -38,6 +38,11 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
         modelDocTemplateFiles.remove("model_doc.mustache");
         apiDocTemplateFiles.remove("api_doc.mustache");
         
+        modelTemplateFiles.clear();
+        apiTemplateFiles.clear();
+        modelTemplateFiles.put("model.mustache", ".java");
+        apiTemplateFiles.put("api.mustache", ".java");
+        
         // clear lots of far more complicated options we don't need
         cliOptions.clear();
         cliOptions.add(new CliOption(CodegenConstants.MODEL_PACKAGE, CodegenConstants.MODEL_PACKAGE_DESC));

@@ -1,21 +1,11 @@
 package {{package}};
 
 import au.org.consumerdatastandards.support.data.*;
+import java.util.List;
+import java.math.BigDecimal;
 
-@DataDefinition
-public class CommonPerson {
 
-{{#models}}
-    {{#model}}
-        {{#vars}}
-    @Property(
-        description = "{{{description}}}",
-        required = {{#required}}true{{/required}}{{^required}}false{{/required}}
-    )
-    {{{datatypeWithEnum}}} {{baseName}};
-
-        {{/vars}}
-    {{/model}}
-{{/models}}
-
-}
+{{#models}}{{#model}}
+{{#isEnum}}{{>enumOuterClass}}{{/isEnum}}
+{{^isEnum}}{{>pojo}}{{/isEnum}}
+{{/model}}{{/models}}

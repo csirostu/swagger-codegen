@@ -1,9 +1,11 @@
-package {{invokerPackage}};
+package {{apiPackage}};
 
 import au.org.consumerdatastandards.support.*;
 import au.org.consumerdatastandards.support.security.EndpointAuth;
 import au.org.consumerdatastandards.support.security.EndpointAuthAccess;
 import au.org.consumerdatastandards.support.security.EndpointAuthType;
+import au.org.consumerdatastandards.api.common.ErrorResponse;
+import au.org.consumerdatastandards.api.common.Scope;
 
 import {{modelPackage}}.*;
 
@@ -14,7 +16,7 @@ import {{modelPackage}}.*;
 public interface {{classname}}  {
 {{#operation}}
     @Endpoint(
-        path = "/{{{baseName}}}"
+        path = "/{{{baseName}}}",
         summary = "{{ summary }}",
         description = "{{notes}}",
         requestMethod = RequestMethod.{{ httpMethod }},
