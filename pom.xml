@@ -125,7 +125,9 @@
                 <version>${surefire-version}</version>
                 <configuration>
                     <testNGArtifactName>none:none</testNGArtifactName>
-                    <argLine>-XX:+StartAttachListener</argLine>
+                    <argLine>-javaagent:${settings.localRepository}/org/jmockit/jmockit/${jmockit-version}/jmockit-${jmockit-version}.jar</argLine>
+<!--                    <argLine>-XX:+StartAttachListener</argLine> -->
+<!--                    <argLine>-Djdk.attach.allowAttachSelf</argLine> -->
                 </configuration>
                 <executions>
                     <execution>
@@ -953,8 +955,9 @@
         <jmustache-version>1.12</jmustache-version>
         <testng-version>6.9.6</testng-version>
         <surefire-version>2.19.1</surefire-version>
-        <jmockit-version>1.25</jmockit-version>
+        <jmockit-version>1.45</jmockit-version>
         <reflections-version>0.9.11</reflections-version>
         <snakeyaml-version>1.23</snakeyaml-version>
+        <mockito-version>2.25.1</mockito-version>
     </properties>
 </project>

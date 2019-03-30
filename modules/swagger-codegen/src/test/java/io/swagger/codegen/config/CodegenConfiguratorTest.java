@@ -13,7 +13,7 @@ import mockit.Expectations;
 import mockit.FullVerifications;
 import mockit.Injectable;
 import mockit.Mocked;
-import mockit.StrictExpectations;
+import mockit.Expectations;
 import mockit.Tested;
 import org.apache.commons.lang3.SerializationUtils;
 import org.testng.annotations.Test;
@@ -53,7 +53,7 @@ public class CodegenConfiguratorTest {
 
         configurator.setVerbose(true);
 
-        new StrictExpectations(System.class) {{
+        new Expectations(System.class) {{
             System.setProperty("debugSwagger", "");
             times = 1;
             System.setProperty("debugModels", "");
@@ -344,7 +344,7 @@ public class CodegenConfiguratorTest {
     @SuppressWarnings("unused")
     private void setupStandardExpectations(final String spec, final String languageName, final String auth, final CodegenConfig config) {
 
-        new StrictExpectations() {{
+        new Expectations() {{
             CodegenConfigLoader.forName(languageName);
             times = 1;
             result = config;
