@@ -26,7 +26,7 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
     private static final Logger LOGGER = LoggerFactory.getLogger(CDSModelsCodegen.class);
 
     protected String title = "CDS Models Generator";
-    protected String implFolder = "src/main/java";
+    protected String implFolder = "src/gen/java";
     public CDSModelsCodegen() {
         super();
 
@@ -41,7 +41,7 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
         // clear lots of far more complicated options we don't need
         cliOptions.clear();
         cliOptions.add(new CliOption(CodegenConstants.MODEL_PACKAGE, CodegenConstants.MODEL_PACKAGE_DESC));
-        cliOptions.add(new CliOption(CodegenConstants.API_PACKAGE, CodegenConstants.API_PACKAGE_DESC));        
+        cliOptions.add(new CliOption(CodegenConstants.API_PACKAGE, CodegenConstants.API_PACKAGE_DESC));      
 
 
         apiPackage = System.getProperty("swagger.codegen.cdsmodels.apipackage", "au.org.consumerdatastandards.api");
@@ -113,6 +113,7 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
                     int end = rt.lastIndexOf(">");
                     if (end > 0) {
                         operation.returnType = rt.substring("List<".length(), end);
+                        operation.returnType = operation.returnType + "[]";
                         operation.returnContainer = "List";
                     }
                 } else if (operation.returnType.startsWith("Map")) {
