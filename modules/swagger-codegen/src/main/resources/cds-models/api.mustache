@@ -38,16 +38,17 @@ public interface {{classname}}  {
                 description = "Token has incorrect scope or a security policy was violated.",
                 content = ErrorResponse.class
             )
-        },
+        }{{#hasCdsScopes}},
         requiredAuth = {
             @EndpointAuth(
                 type = EndpointAuthType.CDS_FAPI,
                 access = EndpointAuthAccess.READ_ONLY,
                 scopes = {
-                    Scope.UNDEFINED_SCOPE
+                	{{#cdsScopes}}Scope.{{.}}{{#hasMore}},{{/hasMore}}
+                	{{/cdsScopes}}
                 }
             )
-        }
+        }{{/hasCdsScopes}}
     )
     {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}} {{operationId}}({{#allParams}}
         @Param(
@@ -55,7 +56,8 @@ public interface {{classname}}  {
              in = {{#isHeaderParam}}ParamLocation.HEADER{{/isHeaderParam}}{{#isPathParam}}ParamLocation.PATH{{/isPathParam}}{{#isQueryParam}}ParamLocation.QUERY{{/isQueryParam}}{{#isBodyParam}}ParamLocation.BODY{{/isBodyParam}}{{#defaultValue}},
              defaultValue = "{{{defaultValue}}}"{{/defaultValue}}{{^isPrimitiveType}},
              schema = {{{dataType}}}.class{{/isPrimitiveType}}
-        ) {{dataType}} {{paramName}} {{#hasMore}}, {{/hasMore}}
+        ) 
+        {{dataType}} {{paramName}} {{#hasMore}}, {{/hasMore}}
     {{/allParams}});
 {{/subresourceOperation}}{{/operation}}
 {{/operations}}

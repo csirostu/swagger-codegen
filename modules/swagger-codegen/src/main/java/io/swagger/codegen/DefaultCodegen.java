@@ -2107,7 +2107,18 @@ public class DefaultCodegen {
         CodegenOperation op = CodegenModelFactory.newInstance(CodegenModelType.OPERATION);
         Set<String> imports = new HashSet<String>();
         op.vendorExtensions = operation.getVendorExtensions();
+        
+        Map<String, Object> extensionSet = op.vendorExtensions;
 
+        if(op.vendorExtensions.containsKey("x-scopes")) {
+            List<String> cdsScopes = (List<String>)op.vendorExtensions.get("x-scopes");
+            for(int i = 0; i < cdsScopes.size(); i++) {
+                String oneScope = cdsScopes.get(i);
+                op.cdsScopes.add(oneScope.toUpperCase());
+                op.hasCdsScopes = true;
+            }
+        }
+        
         // store the original operationId for plug-in
         op.operationIdOriginal = operation.getOperationId();
 
@@ -2209,6 +2220,8 @@ public class DefaultCodegen {
             op.hasProduces = true;
         }
 
+        
+        
         if (operation.getResponses() != null && !operation.getResponses().isEmpty()) {
             Response methodResponse = findMethodResponse(operation.getResponses());
 
