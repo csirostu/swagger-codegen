@@ -1,5 +1,5 @@
 @DataDefinition
-public class {{classname}} {
+public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedResponse{{/isPaginated}}{{^isPaginated}}BaseResponse{{/isPaginated}}{{/isResponse}} {
 
 {{#models}}
     {{#model}}
@@ -16,13 +16,13 @@ public class {{classname}} {
       {{/isContainer}}
       {{/items}}
     {{/items.isEnum}}
-          
+{{^isInherited}}
     @Property(
         description = "{{{description}}}",
         required = {{#required}}true{{/required}}{{^required}}false{{/required}}
     )
     {{{datatypeWithEnum}}} {{baseName}};
-
+{{/isInherited}}
         {{/vars}}
     {{/model}}
 {{/models}}

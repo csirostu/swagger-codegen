@@ -4,8 +4,8 @@ import au.org.consumerdatastandards.support.*;
 import au.org.consumerdatastandards.support.security.EndpointAuth;
 import au.org.consumerdatastandards.support.security.EndpointAuthAccess;
 import au.org.consumerdatastandards.support.security.EndpointAuthType;
-import au.org.consumerdatastandards.api.common.ErrorResponse;
-import au.org.consumerdatastandards.api.common.Scope;
+import au.org.consumerdatastandards.api.common.responses.ErrorResponse;
+import au.org.consumerdatastandards.api.common.models.Scope;
 
 import {{modelPackage}}.*;
 
@@ -14,9 +14,10 @@ import {{modelPackage}}.*;
 
 {{#operations}}
 public interface {{classname}}  {
-{{#operation}}
+
+{{#operation}}{{#subresourceOperation}}
     @Endpoint(
-        path = "/{{{baseName}}}",
+        path = "{{{baseName}}}",
         summary = "{{ summary }}",
         description = "{{notes}}",
         requestMethod = RequestMethod.{{ httpMethod }},
@@ -24,7 +25,7 @@ public interface {{classname}}  {
         responses = {
             @EndpointResponse(
                 responseCode = ResponseCode.OK,
-                description = "Successful response for {{nickname}}",
+                description = "Successful response for {{ summary }}",
                 content = {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}}.class
             ),
             @EndpointResponse(
@@ -43,14 +44,15 @@ public interface {{classname}}  {
                 type = EndpointAuthType.CDS_FAPI,
                 access = EndpointAuthAccess.READ_ONLY,
                 scopes = {
-                    Scope.COMMON_BASIC_CUSTOMER
+                    Scope.UNDEFINED_SCOPE
                 }
             )
         }
     )
     {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}} {{operationId}}();
-   
-{{/operation}}
-
+{{/subresourceOperation}}{{/operation}}
 {{/operations}}
+
+}
+
 

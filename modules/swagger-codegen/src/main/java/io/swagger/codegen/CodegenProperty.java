@@ -49,6 +49,7 @@ public class CodegenProperty implements Cloneable {
     public Map<String, Object> vendorExtensions;
     public boolean hasValidation; // true if pattern, maximum, etc are set (only used in the mustache template)
     public boolean isInherited;
+    public boolean isResponse;
     public String discriminatorValue;
     public String nameInCamelCase; // property name in camel case
     // enum name based on the property name, usually use as a prefix (e.g. VAR_NAME) for enum name (e.g. VAR_NAME_VALUE1)
@@ -132,6 +133,7 @@ public class CodegenProperty implements Cloneable {
         result = prime * result + ((isMapContainer ? 13:31));
         result = prime * result + ((isListContainer  ? 13:31));
         result = prime * result + Objects.hashCode(isInherited);
+        result = prime * result + Objects.hashCode(isResponse);
         result = prime * result + Objects.hashCode(discriminatorValue);
         result = prime * result + Objects.hashCode(nameInCamelCase);
         result = prime * result + Objects.hashCode(enumName);
@@ -312,6 +314,9 @@ public class CodegenProperty implements Cloneable {
             return false;
         }
         if (!Objects.equals(this.isInherited, other.isInherited)) {
+            return false;
+        }
+        if (!Objects.equals(this.isResponse, other.isResponse)) {
             return false;
         }
         if (!Objects.equals(this.discriminatorValue, other.discriminatorValue)) {

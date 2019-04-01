@@ -1,6 +1,7 @@
 package io.swagger.codegen.languages;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.CaseFormat;
 
 import io.swagger.codegen.CliOption;
 import io.swagger.codegen.CodegenConstants;
@@ -8,9 +9,11 @@ import io.swagger.codegen.CodegenModel;
 import io.swagger.codegen.CodegenOperation;
 import io.swagger.codegen.CodegenProperty;
 import io.swagger.codegen.CodegenType;
+import io.swagger.codegen.DefaultCodegen;
 import io.swagger.codegen.SupportingFile;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
+import io.swagger.models.Tag;
 import io.swagger.util.Yaml;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
@@ -27,6 +30,7 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
 
     protected String title = "CDS Models Generator";
     protected String implFolder = "src/gen/java";
+
     public CDSModelsCodegen() {
         super();
 
@@ -37,20 +41,21 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
         // clear model and api doc templates
         modelDocTemplateFiles.remove("model_doc.mustache");
         apiDocTemplateFiles.remove("api_doc.mustache");
-        
+
         modelTemplateFiles.clear();
         apiTemplateFiles.clear();
         modelTemplateFiles.put("model.mustache", ".java");
         apiTemplateFiles.put("api.mustache", ".java");
-        
+
         // clear lots of far more complicated options we don't need
         cliOptions.clear();
         cliOptions.add(new CliOption(CodegenConstants.MODEL_PACKAGE, CodegenConstants.MODEL_PACKAGE_DESC));
-        cliOptions.add(new CliOption(CodegenConstants.API_PACKAGE, CodegenConstants.API_PACKAGE_DESC));      
-
+        cliOptions.add(new CliOption(CodegenConstants.API_PACKAGE, CodegenConstants.API_PACKAGE_DESC));
+        cliOptions.add(new CliOption("pathLevel", "From what depth to export controllers"));
 
         apiPackage = System.getProperty("swagger.codegen.cdsmodels.apipackage", "au.org.consumerdatastandards.api");
-        modelPackage = System.getProperty("swagger.codegen.cdsmodels.modelpackage", "au.org.consumerdatastandards.models");
+        modelPackage = System.getProperty("swagger.codegen.cdsmodels.modelpackage",
+                "au.org.consumerdatastandards.models");
 
         additionalProperties.put("title", title);
         // java inflector uses the jackson lib
@@ -78,31 +83,51 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
     }
 
     @Override
-    public void addOperationToGroup(String tag, String resourcePath, Operation operation, CodegenOperation co, Map<String, List<CodegenOperation>> operations) {
+    public void addOperationToGroup(String tag, String resourcePath, Operation operation, CodegenOperation co,
+            Map<String, List<CodegenOperation>> operations) {
         String basePath = resourcePath;
-        if (basePath.startsWith("/")) {
-            basePath = basePath.substring(1);
-        }
-        int pos = basePath.indexOf("/");
-        if (pos > 0) {
-            basePath = basePath.substring(0, pos);
+        
+        if (tag.endsWith("ApIs")) {
+            tag = tag.replaceAll("ApIs", "Api");
+            co.subresourceOperation = false;
+        } else {
+            if(tag.equals("Customer")) {
+                tag = "CommonCustomerAPI";
+            } else {
+                tag = "Banking" + tag + "API";
+            }
+            co.subresourceOperation = true;
         }
 
-        if (basePath == "") {
-            basePath = "default";
-        } else {
-            if (co.path.startsWith("/" + basePath)) {
-                co.path = co.path.substring(("/" + basePath).length());
-            }
-            co.subresourceOperation = !co.path.isEmpty();
-        }
-        List<CodegenOperation> opList = operations.get(basePath);
+        List<CodegenOperation> opList = operations.get(tag);
+        
         if (opList == null) {
             opList = new ArrayList<CodegenOperation>();
-            operations.put(basePath, opList);
+            operations.put(tag, opList);
         }
-        opList.add(co);
+        
+        // LOGGER.warn("Tag is set to: " + tag);
+
+
+        // check for operationId uniqueness
+
+        String uniqueName = co.operationId;
+        int counter = 0;
+        for (CodegenOperation op : opList) {
+            if (uniqueName.equals(op.operationId)) {
+                uniqueName = co.operationId + "_" + counter;
+                counter++;
+            }
+        }
+        if (!co.operationId.equals(uniqueName)) {
+            LOGGER.warn("generated unique operationId `" + uniqueName + "`");
+        }
+        co.operationId = uniqueName;
+        co.operationIdLowerCase = uniqueName.toLowerCase();
+        co.operationIdCamelCase = uniqueName;
+        co.operationIdSnakeCase = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, uniqueName);
         co.baseName = basePath;
+        opList.add(co);
     }
 
     @Override
@@ -144,12 +169,26 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
     @Override
     public void postProcessModelProperty(CodegenModel model, CodegenProperty property) {
         super.postProcessModelProperty(model, property);
+        
+        //LOGGER.warn("Data type of property is: " +  property.datatype);
+        
+        if(model.name.contains("Response")) {
+            model.isResponse = true;
+        }
+        if(property.datatype.equals("Meta") || property.datatype.equals("Links")) {
+            model.isPaginated = false;
+            property.isInherited = true;
+        } else if(property.datatype.equals("MetaPaginated") || property.datatype.equals("LinksPaginated")) {
+            model.isPaginated = true;
+            property.isInherited = true;
+        }
+        
 
-        //Add imports for Jackson
-        if(!BooleanUtils.toBoolean(model.isEnum)) {
+        // Add imports for Jackson
+        if (!BooleanUtils.toBoolean(model.isEnum)) {
             model.imports.add("JsonProperty");
 
-            if(BooleanUtils.toBoolean(model.hasEnums)) {
+            if (BooleanUtils.toBoolean(model.hasEnums)) {
                 model.imports.add("JsonValue");
             }
         }
@@ -159,8 +198,8 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
     public Map<String, Object> postProcessModelsEnum(Map<String, Object> objs) {
         objs = super.postProcessModelsEnum(objs);
 
-        //Add imports for Jackson
-        List<Map<String, String>> imports = (List<Map<String, String>>)objs.get("imports");
+        // Add imports for Jackson
+        List<Map<String, String>> imports = (List<Map<String, String>>) objs.get("imports");
         List<Object> models = (List<Object>) objs.get("models");
         for (Object _mo : models) {
             Map<String, Object> mo = (Map<String, Object>) _mo;
@@ -185,7 +224,7 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
     public String apiFilename(String templateName, String tag) {
         String result = super.apiFilename(templateName, tag);
 
-        if ( templateName.endsWith("api.mustache") ) {
+        if (templateName.endsWith("api.mustache")) {
             int ix = result.indexOf(sourceFolder);
             String beg = result.substring(0, ix);
             String end = result.substring(ix + sourceFolder.length());
@@ -197,8 +236,8 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
 
     @Override
     public Map<String, Object> postProcessSupportingFileData(Map<String, Object> objs) {
-        Swagger swagger = (Swagger)objs.get("swagger");
-        if(swagger != null) {
+        Swagger swagger = (Swagger) objs.get("swagger");
+        if (swagger != null) {
             try {
                 objs.put("swagger-yaml", Yaml.mapper().writeValueAsString(swagger));
             } catch (JsonProcessingException e) {
@@ -213,7 +252,8 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
         if (name.length() == 0) {
             return "DefaultController";
         }
-        name = name.replaceAll("[^a-zA-Z0-9]+", "_");
-        return camelize(name)+ "Controller";
+        return name;
+        // name = name.replaceAll("[^a-zA-Z0-9]+", "_");
+        // return camelize(name)+ "Controller";
     }
 }

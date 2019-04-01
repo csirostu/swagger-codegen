@@ -33,13 +33,14 @@ public class CodegenModel {
     public List<CodegenProperty> allVars;
     public List<CodegenProperty> parentVars = new ArrayList<>();
     public Map<String, Object> allowableValues;
+    public boolean isResponse;
 
     // Sorted sets of required parameters.
     public Set<String> mandatory = new TreeSet<String>();
     public Set<String> allMandatory;
 
     public Set<String> imports = new TreeSet<String>();
-    public boolean hasVars, emptyVars, hasMoreModels, hasEnums, isEnum, hasRequired, hasOptional, isArrayModel, hasChildren;
+    public boolean hasVars, emptyVars, hasMoreModels, hasEnums, isEnum, hasRequired, hasOptional, isArrayModel, hasChildren, isPaginated;
     public boolean hasOnlyReadOnly = true; // true if all properties are read-only
     public ExternalDocs externalDocs;
 
@@ -137,6 +138,10 @@ public class CodegenModel {
             return false;
         if (!Objects.equals(hasChildren, that.hasChildren))
             return false;
+        if (!Objects.equals(isPaginated, that.isPaginated))
+            return false;
+        if (!Objects.equals(isResponse, that.isResponse))
+            return false;                
         if (!Objects.equals(parentVars, that.parentVars))
             return false;
         return vendorExtensions != null ? vendorExtensions.equals(that.vendorExtensions) : that.vendorExtensions == null;
@@ -181,6 +186,8 @@ public class CodegenModel {
         result = 31 * result + (vendorExtensions != null ? vendorExtensions.hashCode() : 0);
         result = 31 * result + Objects.hash(hasOnlyReadOnly);
         result = 31 * result + Objects.hash(hasChildren);
+        result = 31 * result + Objects.hash(isPaginated);
+        result = 31 * result + Objects.hash(isResponse);
         result = 31 * result + Objects.hash(parentVars);
         return result;
     }
