@@ -3,6 +3,9 @@ package io.swagger.codegen;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.swagger.models.Model;
+
 import java.util.List;
 
 public class CodegenParameter {

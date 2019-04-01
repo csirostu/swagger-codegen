@@ -51,13 +51,15 @@ public interface {{classname}}  {
         }{{/hasCdsScopes}}
     )
     {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}} {{operationId}}({{#allParams}}
-        @Param(
+        @Param(        
              name = "{{paramName}}",
+             description = "{{description}}",
              in = {{#isHeaderParam}}ParamLocation.HEADER{{/isHeaderParam}}{{#isPathParam}}ParamLocation.PATH{{/isPathParam}}{{#isQueryParam}}ParamLocation.QUERY{{/isQueryParam}}{{#isBodyParam}}ParamLocation.BODY{{/isBodyParam}}{{#defaultValue}},
-             defaultValue = "{{{defaultValue}}}"{{/defaultValue}}{{^isPrimitiveType}},
-             schema = {{{dataType}}}.class{{/isPrimitiveType}}
+             defaultValue = "{{{defaultValue}}}"{{/defaultValue}}{{#isRequired}},
+             required = true{{/isRequired}},
+             schema = {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{dataType}}{{/isEnum}}.class
         ) 
-        {{dataType}} {{paramName}} {{#hasMore}}, {{/hasMore}}
+        {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{dataType}}{{/isEnum}} {{paramName}}{{#hasMore}}, {{/hasMore}}
     {{/allParams}});
 {{/subresourceOperation}}{{/operation}}
 {{/operations}}

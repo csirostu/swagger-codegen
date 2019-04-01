@@ -2358,6 +2358,8 @@ public class DefaultCodegen {
                 } else { // optional parameters
                     op.hasOptionalParams = true;
                 }
+
+                
             }
         }
 
@@ -2837,6 +2839,7 @@ public class DefaultCodegen {
         setParameterExampleValue(p);
 
         postProcessParameter(p);
+        
         return p;
     }
 
