@@ -56,8 +56,8 @@ public interface {{classname}}  {
              description = "{{description}}",
              in = {{#isHeaderParam}}ParamLocation.HEADER{{/isHeaderParam}}{{#isPathParam}}ParamLocation.PATH{{/isPathParam}}{{#isQueryParam}}ParamLocation.QUERY{{/isQueryParam}}{{#isBodyParam}}ParamLocation.BODY{{/isBodyParam}}{{#defaultValue}},
              defaultValue = "{{{defaultValue}}}"{{/defaultValue}}{{#isRequired}},
-             required = true{{/isRequired}},
-             schema = {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{dataType}}{{/isEnum}}.class
+             required = true{{/isRequired}}{{^isPrimitive}},
+             schema = {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{dataType}}{{/isEnum}}.class{{/isPrimitive}}
         ) 
         {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{dataType}}{{/isEnum}} {{paramName}}{{#hasMore}}, {{/hasMore}}
     {{/allParams}});
