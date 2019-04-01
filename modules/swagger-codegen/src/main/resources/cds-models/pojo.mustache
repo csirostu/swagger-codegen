@@ -19,9 +19,21 @@ public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedRespo
 {{^isInherited}}
     @Property(
         description = "{{{description}}}",
-        required = {{#required}}true{{/required}}{{^required}}false{{/required}}
-    )
+        required = {{#required}}true{{/required}}{{^required}}false{{/required}}{{#cdsCustomAttributes}},
+        customAttributes = {
+        	{{#cdsType}}@CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}} 
+        }{{/cdsCustomAttributes}}){{#isDateTimeString}}
+    @StringFormat(format = Format.DATE_TIME){{/isDateTimeString}}{{#isDateString}}
+    @StringFormat(format = Format.DATE){{/isDateString}}{{#isRateString}}
+    @StringFormat(format = Format.RATE){{/isRateString}}{{#isMaskedPANString}}
+    @StringFormat(format = Format.MASKED_PAN){{/isMaskedPANString}}{{#isMaskedAccountString}}
+    @StringFormat(format = Format.MASKED_ACCOUNT){{/isMaskedAccountString}}{{#isURIString}}
+    @StringFormat(format = Format.URI){{/isURIString}}{{#isNaturalNumber}}
+    @IntegerRange(min = 0){{/isNaturalNumber}}{{#isPositiveInteger}}
+    @IntegerRange(min = 1)(Format.PositiveInteger){{/isPositiveInteger}}{{#isNegativeInteger}}
+    @IntegerRange(max = 0){{/isNegativeInteger}}   
     {{{datatypeWithEnum}}} {{baseName}};
+    
 {{/isInherited}}
         {{/vars}}
     {{/model}}

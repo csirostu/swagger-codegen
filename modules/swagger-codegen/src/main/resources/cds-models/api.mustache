@@ -49,7 +49,14 @@ public interface {{classname}}  {
             )
         }
     )
-    {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}} {{operationId}}();
+    {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}} {{operationId}}({{#allParams}}
+        @Param(
+             name = "{{paramName}}",
+             in = {{#isHeaderParam}}ParamLocation.HEADER{{/isHeaderParam}}{{#isPathParam}}ParamLocation.PATH{{/isPathParam}}{{#isQueryParam}}ParamLocation.QUERY{{/isQueryParam}}{{#isBodyParam}}ParamLocation.BODY{{/isBodyParam}}{{#defaultValue}},
+             defaultValue = "{{{defaultValue}}}"{{/defaultValue}}{{^isPrimitiveType}},
+             schema = {{{dataType}}}.class{{/isPrimitiveType}}
+        ) {{dataType}} {{paramName}} {{#hasMore}}, {{/hasMore}}
+    {{/allParams}});
 {{/subresourceOperation}}{{/operation}}
 {{/operations}}
 
