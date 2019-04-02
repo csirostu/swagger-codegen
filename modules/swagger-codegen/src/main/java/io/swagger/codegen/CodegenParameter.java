@@ -27,6 +27,7 @@ public class CodegenParameter {
     public CodegenProperty items;
     public Map<String, Object> vendorExtensions;
     public boolean hasValidation;
+    
 
     /**
      * Determines whether this parameter is mandatory. If the parameter is in "path",
@@ -79,6 +80,18 @@ public class CodegenParameter {
      * See http://json-schema.org/latest/json-schema-validation.html#anchor14
      */
     public Number multipleOf;
+    public String paramClassName;
+    public String paramQueryName;
+    public boolean isASCIIString;
+    public String cdsType;
+    public boolean isNaturalNumber;
+    public boolean isPositiveInteger, isNegativeInteger, isDateTimeString, isTimeString, isRateString, isAmountString, isMaskedPANString, isMaskedAccountString, isURIString;
+    public boolean cdsCustomAttributes;
+    public boolean isAbnString, isAcnString;
+    public boolean isCurrencyString;
+    public boolean isDateString;
+    public boolean isAsciiString;
+    public boolean hasCdsType;
     
     public CodegenParameter copy() {
         CodegenParameter output = new CodegenParameter();

@@ -55,7 +55,7 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
 
         apiPackage = System.getProperty("swagger.codegen.cdsmodels.apipackage", "au.org.consumerdatastandards.api");
         modelPackage = System.getProperty("swagger.codegen.cdsmodels.modelpackage",
-                "au.org.consumerdatastandards.models");
+                "au.org.consumerdatastandards.api.models");
 
         additionalProperties.put("title", title);
         // java inflector uses the jackson lib
@@ -125,45 +125,9 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
         co.operationId = uniqueName;
         co.operationIdLowerCase = uniqueName.toLowerCase();
         co.operationIdCamelCase = uniqueName;
-        co.operationIdSnakeCase = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, uniqueName);
+        co.operationIdSnakeCase = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_HYPHEN, uniqueName);
         co.baseName = basePath;
         opList.add(co);
-    }
-
-    @Override
-    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
-        Map<String, Object> operations = (Map<String, Object>) objs.get("operations");
-        if (operations != null) {
-            List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
-            for (CodegenOperation operation : ops) {
-                if (operation.returnType == null) {
-                    operation.returnType = "Void";
-                } else if (operation.returnType.startsWith("List")) {
-                    String rt = operation.returnType;
-                    int end = rt.lastIndexOf(">");
-                    if (end > 0) {
-                        operation.returnType = rt.substring("List<".length(), end);
-                        operation.returnType = operation.returnType + "[]";
-                        operation.returnContainer = "List";
-                    }
-                } else if (operation.returnType.startsWith("Map")) {
-                    String rt = operation.returnType;
-                    int end = rt.lastIndexOf(">");
-                    if (end > 0) {
-                        operation.returnType = rt.substring("Map<".length(), end);
-                        operation.returnContainer = "Map";
-                    }
-                } else if (operation.returnType.startsWith("Set")) {
-                    String rt = operation.returnType;
-                    int end = rt.lastIndexOf(">");
-                    if (end > 0) {
-                        operation.returnType = rt.substring("Set<".length(), end);
-                        operation.returnContainer = "Set";
-                    }
-                }
-            }
-        }
-        return objs;
     }
 
     @Override

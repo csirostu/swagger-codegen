@@ -22,16 +22,22 @@ public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedRespo
         required = {{#required}}true{{/required}}{{^required}}false{{/required}}{{#cdsCustomAttributes}},
         customAttributes = {
         	{{#cdsType}}@CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}} 
-        }{{/cdsCustomAttributes}}){{#isDateTimeString}}
+        }{{/cdsCustomAttributes}}){{#hasCdsType}}{{#isDateTimeString}}
     @StringFormat(format = Format.DATE_TIME){{/isDateTimeString}}{{#isDateString}}
-    @StringFormat(format = Format.DATE){{/isDateString}}{{#isRateString}}
+    @StringFormat(format = Format.DATE){{/isDateString}}{{#isAcnString}}
+    @StringFormat(format = Format.ACN){{/isAcnString}}{{#isAbnString}}
+    @StringFormat(format = Format.ABN){{/isAbnString}}{{#isRateString}}
     @StringFormat(format = Format.RATE){{/isRateString}}{{#isMaskedPANString}}
     @StringFormat(format = Format.MASKED_PAN){{/isMaskedPANString}}{{#isMaskedAccountString}}
     @StringFormat(format = Format.MASKED_ACCOUNT){{/isMaskedAccountString}}{{#isURIString}}
-    @StringFormat(format = Format.URI){{/isURIString}}{{#isNaturalNumber}}
+    @StringFormat(format = Format.URI){{/isURIString}}{{#isAsciiString}}
+    @StringFormat(format = Format.ASCII){{/isAsciiString}}{{#isAmountString}}
+    @StringFormat(format = Format.AMOUNT){{/isAmountString}}{{#isCurrencyString}}
+    @StringFormat(format = Format.CURRENCY){{/isCurrencyString}}{{#isNaturalNumber}}
     @IntegerRange(min = 0){{/isNaturalNumber}}{{#isPositiveInteger}}
     @IntegerRange(min = 1)(Format.PositiveInteger){{/isPositiveInteger}}{{#isNegativeInteger}}
-    @IntegerRange(max = 0){{/isNegativeInteger}}   
+    @IntegerRange(max = 0){{/isNegativeInteger}}{{/hasCdsType}}{{^hasCdsType}}{{#isString}}
+    @StringFormat(format = Format.ASCII){{/isString}}{{/hasCdsType}}
     {{{datatypeWithEnum}}} {{baseName}};
     
 {{/isInherited}}

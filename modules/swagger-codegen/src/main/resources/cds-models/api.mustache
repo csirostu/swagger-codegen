@@ -6,6 +6,9 @@ import au.org.consumerdatastandards.support.security.EndpointAuthAccess;
 import au.org.consumerdatastandards.support.security.EndpointAuthType;
 import au.org.consumerdatastandards.api.common.responses.ErrorResponse;
 import au.org.consumerdatastandards.api.common.models.Scope;
+import au.org.consumerdatastandards.support.data.Format;
+import au.org.consumerdatastandards.support.data.CustomAttribute;
+import au.org.consumerdatastandards.support.data.StringFormat;
 
 import {{modelPackage}}.*;
 
@@ -52,14 +55,31 @@ public interface {{classname}}  {
     )
     {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}} {{operationId}}({{#allParams}}
         @Param(        
-             name = "{{paramName}}",
+             name = "{{paramQueryName}}",
              description = "{{description}}",
              in = {{#isHeaderParam}}ParamLocation.HEADER{{/isHeaderParam}}{{#isPathParam}}ParamLocation.PATH{{/isPathParam}}{{#isQueryParam}}ParamLocation.QUERY{{/isQueryParam}}{{#isBodyParam}}ParamLocation.BODY{{/isBodyParam}}{{#defaultValue}},
              defaultValue = "{{{defaultValue}}}"{{/defaultValue}}{{#isRequired}},
-             required = true{{/isRequired}}{{^isPrimitive}},
-             schema = {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{dataType}}{{/isEnum}}.class{{/isPrimitive}}
-        ) 
-        {{#isEnum}}{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{dataType}}{{/isEnum}} {{paramName}}{{#hasMore}}, {{/hasMore}}
+             required = true{{/isRequired}}{{#cdsCustomAttributes}},
+             customAttributes = {
+                {{#cdsType}}@CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}} 
+             }{{/cdsCustomAttributes}}
+        ){{#hasCdsType}}{{#isDateTimeString}}
+        @StringFormat(format = Format.DATE_TIME){{/isDateTimeString}}{{#isDateString}}
+        @StringFormat(format = Format.DATE){{/isDateString}}{{#isAcnString}}
+        @StringFormat(format = Format.ACN){{/isAcnString}}{{#isAbnString}}
+        @StringFormat(format = Format.ABN){{/isAbnString}}{{#isRateString}}
+        @StringFormat(format = Format.RATE){{/isRateString}}{{#isMaskedPANString}}
+        @StringFormat(format = Format.MASKED_PAN){{/isMaskedPANString}}{{#isMaskedAccountString}}
+        @StringFormat(format = Format.MASKED_ACCOUNT){{/isMaskedAccountString}}{{#isURIString}}
+        @StringFormat(format = Format.URI){{/isURIString}}{{#isAsciiString}}
+        @StringFormat(format = Format.ASCII){{/isAsciiString}}{{#isAmountString}}
+        @StringFormat(format = Format.AMOUNT){{/isAmountString}}{{#isCurrencyString}}
+        @StringFormat(format = Format.CURRENCY){{/isCurrencyString}}{{#isNaturalNumber}}
+        @IntegerRange(min = 0){{/isNaturalNumber}}{{#isPositiveInteger}}
+        @IntegerRange(min = 1)(Format.PositiveInteger){{/isPositiveInteger}}{{#isNegativeInteger}}
+        @IntegerRange(max = 0){{/isNegativeInteger}}{{/hasCdsType}}{{^hasCdsType}}{{#isString}}
+        @StringFormat(format = Format.ASCII){{/isString}}{{/hasCdsType}}
+        {{#isEnum}}Param{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{dataType}}{{/isEnum}} {{paramName}}{{#hasMore}}, {{/hasMore}}
     {{/allParams}});
 {{/subresourceOperation}}{{/operation}}
 {{/operations}}

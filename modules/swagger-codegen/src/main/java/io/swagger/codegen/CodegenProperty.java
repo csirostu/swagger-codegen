@@ -80,6 +80,10 @@ public class CodegenProperty implements Cloneable {
 
     public boolean cdsCustomAttributes;
 
+    public boolean isAcnString, isAbnString;
+
+    public boolean isDateString, isCurrencyString;
+
     @Override
     public String toString() {
         return String.format("%s(%s)", baseName, datatype);

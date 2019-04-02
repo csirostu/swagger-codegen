@@ -952,20 +952,6 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
         return postProcessModelsEnum(objs);
     }
 
-    @Override
-    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
-        // Remove imports of List, ArrayList, Map and HashMap as they are
-        // imported in the template already.
-        List<Map<String, String>> imports = (List<Map<String, String>>) objs.get("imports");
-        Pattern pattern = Pattern.compile("java\\.util\\.(List|ArrayList|Map|HashMap)");
-        for (Iterator<Map<String, String>> itr = imports.iterator(); itr.hasNext();) {
-            String _import = itr.next().get("import");
-            if (pattern.matcher(_import).matches()) {
-              itr.remove();
-            }
-        }
-        return objs;
-    }
 
     @Override
     public void preprocessSwagger(Swagger swagger) {
@@ -1041,7 +1027,7 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
 
     @Override
     public String toEnumName(CodegenProperty property) {
-        return sanitizeName(camelize(property.name)) + "Enum";
+        return sanitizeName(camelize(property.name));
     }
 
     @Override

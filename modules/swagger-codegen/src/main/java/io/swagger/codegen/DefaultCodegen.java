@@ -742,7 +742,7 @@ public class DefaultCodegen {
      */
     @SuppressWarnings("static-method")
     public String toEnumName(CodegenProperty property) {
-        return StringUtils.capitalize(property.name) + "Enum";
+        return StringUtils.capitalize(property.name);
     }
 
     /**
@@ -1650,7 +1650,20 @@ public class DefaultCodegen {
 
                 } else if (p.getFormat().equals("NaturalNumber")) {
                     property.isNaturalNumber = true;
-                    property.cdsType = "NatualNumber";
+
+                    property.cdsType = "NaturalNumber";
+
+                } else if (p.getFormat().equals("ABNString")) {
+                    property.isAbnString = true;
+                    property.isString = false;
+                    property.cdsType = "ABNString";
+                } else if (p.getFormat().equals("ACNString")) {
+                    property.isAcnString = true;
+                    property.isString = false;
+                    property.cdsType = "ACNString";
+                } else if (p.getFormat().equals("NaturalNumber")) {
+                    property.isNaturalNumber = true;
+                    property.cdsType = "NaturalNumber";
 
                 } else if (p.getFormat().equals("PositiveInteger")) {
                     property.isPositiveInteger = true;
@@ -1662,10 +1675,12 @@ public class DefaultCodegen {
 
                 } else if (p.getFormat().equals("DateTimeString")) {
                     property.isDateTimeString = true;
+                    property.isString = false;
                     property.cdsType = "DateTimeString";
 
                 } else if (p.getFormat().equals("TimeString")) {
                     property.isTimeString = true;
+                    property.isString = false;
                     property.cdsType = "TimeString";
 
                 } else if (p.getFormat().equals("RateString")) {
@@ -1674,24 +1689,40 @@ public class DefaultCodegen {
 
                 } else if (p.getFormat().equals("AmountString")) {
                     property.isAmountString = true;
+                    property.isString = false;
                     property.cdsType = "AmountString";
+
+                } else if (p.getFormat().equals("CurrencyString")) {
+                    property.isCurrencyString = true;
+                    property.isString = false;
+                    property.cdsType = "CurrencyString";
+                } else if (p.getFormat().equals("DateString")) {
+                    property.isDateString = true;
+                    property.isString = false;
+                    property.cdsType = "DateString";
 
                 } else if (p.getFormat().equals("MaskedPANString")) {
                     property.isMaskedPANString = true;
+                    property.isString = false;
                     property.cdsType = "MaskedPANString";
 
                 } else if (p.getFormat().equals("MaskedAccountString")) {
                     property.isMaskedAccountString = true;
+                    property.isString = false;
                     property.cdsType = "MaskedAccountString";
 
                 } else if (p.getFormat().equals("URIString")) {
                     property.isURIString = true;
+                    property.isString = false;
                     property.cdsType = "URIString";
+                } else {
+                    property.cdsCustomAttributes = false;
                 }
             }
-            
-            if(property.cdsType != null) {
+
+            if (property.cdsType != null) {
                 property.cdsCustomAttributes = true;
+                property.hasCdsType = true;
             }
 
             // check if any validation rule defined
@@ -1699,6 +1730,7 @@ public class DefaultCodegen {
                 property.hasValidation = true;
 
             property.isString = true;
+            
             if (sp.getEnum() != null) {
                 List<String> _enum = sp.getEnum();
                 property._enum = _enum;
@@ -2107,18 +2139,18 @@ public class DefaultCodegen {
         CodegenOperation op = CodegenModelFactory.newInstance(CodegenModelType.OPERATION);
         Set<String> imports = new HashSet<String>();
         op.vendorExtensions = operation.getVendorExtensions();
-        
+
         Map<String, Object> extensionSet = op.vendorExtensions;
 
-        if(op.vendorExtensions.containsKey("x-scopes")) {
-            List<String> cdsScopes = (List<String>)op.vendorExtensions.get("x-scopes");
-            for(int i = 0; i < cdsScopes.size(); i++) {
+        if (op.vendorExtensions.containsKey("x-scopes")) {
+            List<String> cdsScopes = (List<String>) op.vendorExtensions.get("x-scopes");
+            for (int i = 0; i < cdsScopes.size(); i++) {
                 String oneScope = cdsScopes.get(i);
                 op.cdsScopes.add(oneScope.toUpperCase());
                 op.hasCdsScopes = true;
             }
         }
-        
+
         // store the original operationId for plug-in
         op.operationIdOriginal = operation.getOperationId();
 
@@ -2220,8 +2252,6 @@ public class DefaultCodegen {
             op.hasProduces = true;
         }
 
-        
-        
         if (operation.getResponses() != null && !operation.getResponses().isEmpty()) {
             Response methodResponse = findMethodResponse(operation.getResponses());
 
@@ -2314,6 +2344,84 @@ public class DefaultCodegen {
         if (parameters != null) {
             for (Parameter param : parameters) {
                 CodegenParameter p = fromParameter(param, imports);
+
+                if (p.dataFormat != null) {
+                    if (p.dataFormat.equals("ASCIIString")) {
+                        p.isASCIIString = true;
+                        p.cdsType = "ASCIIString";
+
+                    } else if (p.dataFormat.equals("NaturalNumber")) {
+                        p.isNaturalNumber = true;
+                        p.cdsType = "NaturalNumber";
+                    } else if (p.dataFormat.equals("ABNString")) {
+                        p.isAbnString = true;
+                        p.isString = false;
+
+                        p.cdsType = "ABNString";
+                    } else if (p.dataFormat.equals("ACNString")) {
+                        p.isAcnString = true;
+                        p.isString = false;
+
+                        p.cdsType = "ACNString";
+                    } else if (p.dataFormat.equals("PositiveInteger")) {
+                        p.isPositiveInteger = true;
+                        p.cdsType = "PositiveInteger";
+
+                    } else if (p.dataFormat.equals("NegativeInteger")) {
+                        p.isNegativeInteger = true;
+                        p.cdsType = "NegativeInteger";
+                    } else if (p.dataFormat.equals("DateString")) {
+                        p.isDateString = true;
+                        p.isString = false;
+
+                        p.cdsType = "DateString";
+                    } else if (p.dataFormat.equals("DateTimeString")) {
+                        p.isDateTimeString = true;
+                        p.isString = false;
+
+                        p.cdsType = "DateTimeString";
+                    } else if (p.dataFormat.equals("RateString")) {
+                        p.isRateString = true;
+                        p.isString = false;
+
+                        p.cdsType = "RateString";
+
+                    } else if (p.dataFormat.equals("CurrencyString")) {
+                        p.isCurrencyString = true;
+                        p.isString = false;
+
+                        p.cdsType = "CurrencyString";
+
+                    } else if (p.dataFormat.equals("AmountString")) {
+                        p.isAmountString = true;
+                        p.isString = false;
+                        p.cdsType = "AmountString";
+
+                    } else if (p.dataFormat.equals("MaskedPANString")) {
+                        p.isMaskedPANString = true;
+                        p.isString = false;
+
+                        p.cdsType = "MaskedPANString";
+
+                    } else if (p.dataFormat.equals("MaskedAccountString")) {
+                        p.isMaskedAccountString = true;
+                        p.isString = false;
+
+                        p.cdsType = "MaskedAccountString";
+
+                    } else if (p.dataFormat.equals("URIString")) {
+                        p.isURIString = true;
+                        p.isString = false;
+
+                        p.cdsType = "URIString";
+                    }
+                }
+
+                if (p.cdsType != null) {
+                    p.cdsCustomAttributes = true;
+                    p.hasCdsType = true;
+                }
+
                 // rename parameters to make sure all of them have unique names
                 if (ensureUniqueParams) {
                     while (true) {
@@ -2359,7 +2467,6 @@ public class DefaultCodegen {
                     op.hasOptionalParams = true;
                 }
 
-                
             }
         }
 
@@ -2653,6 +2760,9 @@ public class DefaultCodegen {
                 p.isCollectionFormatMulti = true;
             }
             p.paramName = toParamName(qp.getName());
+            LOGGER.warn("Processing " + qp.getName());
+            p.paramQueryName = qp.getName();
+            p.paramClassName = qp.getName();
 
             // import
             if (cp.complexType != null) {
@@ -2839,7 +2949,7 @@ public class DefaultCodegen {
         setParameterExampleValue(p);
 
         postProcessParameter(p);
-        
+
         return p;
     }
 
@@ -3854,7 +3964,7 @@ public class DefaultCodegen {
                 var.defaultValue = toEnumDefaultValue(enumName, var.datatypeWithEnum);
             }
         }
-        
+
     }
 
     /**
