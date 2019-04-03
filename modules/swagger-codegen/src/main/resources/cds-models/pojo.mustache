@@ -20,8 +20,8 @@ public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedRespo
     @Property(
         description = "{{{description}}}",
         required = {{#required}}true{{/required}}{{^required}}false{{/required}}
-    )
-    {{#cdsCustomAttributes}}@CustomAttributes({
+    ){{#cdsCustomAttributes}}
+    @CustomAttributes({
         {{#cdsType}}    @CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}}
         }){{/cdsCustomAttributes}}{{#hasCdsType}}{{#isDateTimeString}} 
     @StringFormat(format = Format.DATE_TIME){{/isDateTimeString}}{{#isDateString}}
