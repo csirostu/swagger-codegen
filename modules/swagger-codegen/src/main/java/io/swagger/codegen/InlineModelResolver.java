@@ -46,6 +46,8 @@ public class InlineModelResolver {
                                 if (bp.getSchema() != null) {
                                     Model model = bp.getSchema();
                                     if (model instanceof ModelImpl) {
+                                        LOGGER.warn("I have a model parameter for: " + bp.getSchema().getTitle());
+
                                         ModelImpl obj = (ModelImpl) model;
                                         if (obj.getType() == null || "object".equals(obj.getType())) {
                                             if (obj.getProperties() != null && obj.getProperties().size() > 0) {
@@ -61,6 +63,7 @@ public class InlineModelResolver {
                                         Property inner = am.getItems();
 
                                         if (inner instanceof ObjectProperty) {
+                                            LOGGER.warn("I have a reference parameter for: " + inner.getName());
                                             ObjectProperty op = (ObjectProperty) inner;
                                             if (op.getProperties() != null && op.getProperties().size() > 0) {
                                                 flattenProperties(op.getProperties(), pathname);

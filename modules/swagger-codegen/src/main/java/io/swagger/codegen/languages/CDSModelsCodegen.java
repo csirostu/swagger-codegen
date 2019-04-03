@@ -139,6 +139,7 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
         if(model.name.contains("Response")) {
             model.isResponse = true;
         }
+
         if(property.datatype.equals("Meta") || property.datatype.equals("Links")) {
             model.isPaginated = false;
             property.isInherited = true;
@@ -147,7 +148,6 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
             property.isInherited = true;
         }
         
-
         // Add imports for Jackson
         if (!BooleanUtils.toBoolean(model.isEnum)) {
             model.imports.add("JsonProperty");

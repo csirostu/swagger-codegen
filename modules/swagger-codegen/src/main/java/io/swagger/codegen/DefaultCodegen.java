@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import java.io.File;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,6 +39,7 @@ import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.parameters.RefParameter;
 import io.swagger.models.parameters.SerializableParameter;
 import io.swagger.models.properties.AbstractNumericProperty;
 import io.swagger.models.properties.ArrayProperty;
@@ -1361,6 +1363,7 @@ public class DefaultCodegen {
                 m.allVars = new ArrayList<CodegenProperty>();
                 int modelImplCnt = 0; // only one inline object allowed in a ComposedModel
                 for (Model innerModel : ((ComposedModel) model).getAllOf()) {
+                    LOGGER.warn("Discovered composed model " + innerModel.getReference());
                     if (innerModel instanceof ModelImpl) {
                         ModelImpl modelImpl = (ModelImpl) innerModel;
                         if (m.discriminator == null) {
@@ -1409,14 +1412,18 @@ public class DefaultCodegen {
                         addImport(m, interfaceRef);
                         if (allDefinitions != null) {
                             if (!supportsMixins) {
-                                addProperties(properties, required, interfaceModel, allDefinitions);
+                                //addProperties(properties, required, interfaceModel, allDefinitions);
                             }
                             if (supportsInheritance) {
-                                addProperties(allProperties, allRequired, interfaceModel, allDefinitions);
+                                //addProperties(allProperties, allRequired, interfaceModel, allDefinitions);
                             }
                         }
                     }
                 }
+            }
+            
+            if(m.interfaces.size() > 0) {
+                m.hasInterfaces = true;
             }
 
             if (parent != null) {
@@ -1490,7 +1497,7 @@ public class DefaultCodegen {
     /**
      * Recursively look for a discriminator in the interface tree
      */
-    private boolean isDiscriminatorInInterfaceTree(ComposedModel model, Map<String, Model> allDefinitions) {
+    protected boolean isDiscriminatorInInterfaceTree(ComposedModel model, Map<String, Model> allDefinitions) {
         if (model == null || allDefinitions == null)
             return false;
 
@@ -2344,7 +2351,20 @@ public class DefaultCodegen {
         if (parameters != null) {
             for (Parameter param : parameters) {
                 CodegenParameter p = fromParameter(param, imports);
+                
+                for(Map.Entry<String, Parameter> entry: swagger.getParameters().entrySet()) {
+                    if(entry.getValue().getName().equals(p.baseName)) {
+                        p.isReference = true;
+                        p.referenceName = entry.getKey();
+                    }
+                    
+                }
+                
+                if(param instanceof RefParameter) {
+                    LOGGER.warn("Found reference parameter " + p.toString());
 
+                }
+               
                 if (p.dataFormat != null) {
                     if (p.dataFormat.equals("ASCIIString")) {
                         p.isASCIIString = true;
@@ -2760,7 +2780,6 @@ public class DefaultCodegen {
                 p.isCollectionFormatMulti = true;
             }
             p.paramName = toParamName(qp.getName());
-            LOGGER.warn("Processing " + qp.getName());
             p.paramQueryName = qp.getName();
             p.paramClassName = qp.getName();
 
@@ -3233,7 +3252,7 @@ public class DefaultCodegen {
         co.baseName = tag;
     }
 
-    private void addParentContainer(CodegenModel m, String name, Property property) {
+    protected void addParentContainer(CodegenModel m, String name, Property property) {
         final CodegenProperty tmp = fromProperty(name, property);
         addImport(m, tmp.complexType);
         m.parent = toInstantiationType(property);
@@ -3311,12 +3330,12 @@ public class DefaultCodegen {
         }
     }
 
-    private void addVars(CodegenModel m, Map<String, Property> properties, List<String> required,
+    protected void addVars(CodegenModel m, Map<String, Property> properties, List<String> required,
             Map<String, Model> allDefinitions) {
         addVars(m, properties, required, allDefinitions, null, null);
     }
 
-    private void addVars(CodegenModel m, Map<String, Property> properties, List<String> required,
+    protected void addVars(CodegenModel m, Map<String, Property> properties, List<String> required,
             Map<String, Model> allDefinitions, Map<String, Property> allProperties, List<String> allRequired) {
 
         m.hasRequired = false;
@@ -3430,7 +3449,7 @@ public class DefaultCodegen {
      * @param allDefinitions The complete set of model definitions.
      * @return A mapping from model name to type alias
      */
-    private static Map<String, String> getAllAliases(Map<String, Model> allDefinitions) {
+    protected static Map<String, String> getAllAliases(Map<String, Model> allDefinitions) {
         Map<String, String> aliases = new HashMap<>();
         if (allDefinitions != null) {
             for (Map.Entry<String, Model> entry : allDefinitions.entrySet()) {

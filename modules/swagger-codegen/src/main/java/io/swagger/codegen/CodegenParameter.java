@@ -3,8 +3,10 @@ package io.swagger.codegen;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import io.swagger.models.Model;
+import io.swagger.models.parameters.Parameter;
 
 import java.util.List;
 
@@ -92,6 +94,8 @@ public class CodegenParameter {
     public boolean isDateString;
     public boolean isAsciiString;
     public boolean hasCdsType;
+    public boolean isReference;
+    public String referenceName;
     
     public CodegenParameter copy() {
         CodegenParameter output = new CodegenParameter();

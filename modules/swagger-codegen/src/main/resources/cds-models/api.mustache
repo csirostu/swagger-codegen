@@ -59,11 +59,9 @@ public interface {{classname}}  {
              description = "{{description}}",
              in = {{#isHeaderParam}}ParamLocation.HEADER{{/isHeaderParam}}{{#isPathParam}}ParamLocation.PATH{{/isPathParam}}{{#isQueryParam}}ParamLocation.QUERY{{/isQueryParam}}{{#isBodyParam}}ParamLocation.BODY{{/isBodyParam}}{{#defaultValue}},
              defaultValue = "{{{defaultValue}}}"{{/defaultValue}}{{#isRequired}},
-             required = true{{/isRequired}}{{#cdsCustomAttributes}},
-             customAttributes = {
-                {{#cdsType}}@CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}} 
-             }{{/cdsCustomAttributes}}
-        ){{#hasCdsType}}{{#isDateTimeString}}
+             required = true{{/isRequired}}{{#isReference}},
+             reference = "{{referenceName}}"{{/isReference}}){{#cdsCustomAttributes}}
+        {{#cdsType}}@CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}}{{/cdsCustomAttributes}}{{#hasCdsType}}{{#isDateTimeString}}
         @StringFormat(format = Format.DATE_TIME){{/isDateTimeString}}{{#isDateString}}
         @StringFormat(format = Format.DATE){{/isDateString}}{{#isAcnString}}
         @StringFormat(format = Format.ACN){{/isAcnString}}{{#isAbnString}}

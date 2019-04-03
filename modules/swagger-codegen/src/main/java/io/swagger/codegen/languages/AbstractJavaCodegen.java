@@ -882,24 +882,6 @@ public abstract class AbstractJavaCodegen extends DefaultCodegen implements Code
     }
 
     @Override
-    public CodegenModel fromModel(String name, Model model, Map<String, Model> allDefinitions) {
-        CodegenModel codegenModel = super.fromModel(name, model, allDefinitions);
-        if(codegenModel.description != null) {
-            codegenModel.imports.add("ApiModel");
-        }
-        if (codegenModel.discriminator != null && additionalProperties.containsKey("jackson")) {
-            codegenModel.imports.add("JsonSubTypes");
-            codegenModel.imports.add("JsonTypeInfo");
-        }
-        if (allDefinitions != null && codegenModel.parentSchema != null && codegenModel.hasEnums) {
-            final Model parentModel = allDefinitions.get(codegenModel.parentSchema);
-            final CodegenModel parentCodegenModel = super.fromModel(codegenModel.parent, parentModel);
-            codegenModel = AbstractJavaCodegen.reconcileInlineEnums(codegenModel, parentCodegenModel);
-        }
-        return codegenModel;
-    }
-
-    @Override
     public void postProcessModelProperty(CodegenModel model, CodegenProperty property) {
         if(serializeBigDecimalAsString) {
             if (property.baseType.equals("BigDecimal")) {

@@ -1,8 +1,8 @@
-@DataDefinition
+{{#models}}{{#model}}
+@DataDefinition({{#hasInterfaces}}
+    allOf = { {{#interfaces}}{{.}}.class{{#hasMore}},{{/hasMore}}{{^hasMore}} } {{/hasMore}}{{/interfaces}}
+{{/hasInterfaces}})
 public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedResponse{{/isPaginated}}{{^isPaginated}}BaseResponse{{/isPaginated}}{{/isResponse}} {
-
-{{#models}}
-    {{#model}}
         {{#vars}}
     {{#isEnum}}
     {{^isContainer}}
@@ -19,10 +19,8 @@ public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedRespo
 {{^isInherited}}
     @Property(
         description = "{{{description}}}",
-        required = {{#required}}true{{/required}}{{^required}}false{{/required}}{{#cdsCustomAttributes}},
-        customAttributes = {
-        	{{#cdsType}}@CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}} 
-        }{{/cdsCustomAttributes}}){{#hasCdsType}}{{#isDateTimeString}}
+        required = {{#required}}true{{/required}}{{^required}}false{{/required}}){{#cdsCustomAttributes}}
+    {{#cdsType}}@CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}}{{/cdsCustomAttributes}}{{#hasCdsType}}{{#isDateTimeString}} 
     @StringFormat(format = Format.DATE_TIME){{/isDateTimeString}}{{#isDateString}}
     @StringFormat(format = Format.DATE){{/isDateString}}{{#isAcnString}}
     @StringFormat(format = Format.ACN){{/isAcnString}}{{#isAbnString}}
@@ -42,7 +40,4 @@ public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedRespo
     
 {{/isInherited}}
         {{/vars}}
-    {{/model}}
-{{/models}}
-
-}
+}{{/model}}{{/models}}
