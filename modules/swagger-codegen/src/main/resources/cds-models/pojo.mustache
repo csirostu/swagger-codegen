@@ -19,8 +19,11 @@ public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedRespo
 {{^isInherited}}
     @Property(
         description = "{{{description}}}",
-        required = {{#required}}true{{/required}}{{^required}}false{{/required}}){{#cdsCustomAttributes}}
-    {{#cdsType}}@CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}}{{/cdsCustomAttributes}}{{#hasCdsType}}{{#isDateTimeString}} 
+        required = {{#required}}true{{/required}}{{^required}}false{{/required}}
+    )
+    {{#cdsCustomAttributes}}@CustomAttributes({
+        {{#cdsType}}    @CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}}
+        }){{/cdsCustomAttributes}}{{#hasCdsType}}{{#isDateTimeString}} 
     @StringFormat(format = Format.DATE_TIME){{/isDateTimeString}}{{#isDateString}}
     @StringFormat(format = Format.DATE){{/isDateString}}{{#isAcnString}}
     @StringFormat(format = Format.ACN){{/isAcnString}}{{#isAbnString}}
@@ -34,8 +37,7 @@ public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedRespo
     @StringFormat(format = Format.CURRENCY){{/isCurrencyString}}{{#isNaturalNumber}}
     @IntegerRange(min = 0){{/isNaturalNumber}}{{#isPositiveInteger}}
     @IntegerRange(min = 1)(Format.PositiveInteger){{/isPositiveInteger}}{{#isNegativeInteger}}
-    @IntegerRange(max = 0){{/isNegativeInteger}}{{/hasCdsType}}{{^hasCdsType}}{{#isString}}
-    @StringFormat(format = Format.ASCII){{/isString}}{{/hasCdsType}}
+    @IntegerRange(max = 0){{/isNegativeInteger}}{{/hasCdsType}}
     {{{datatypeWithEnum}}} {{baseName}};
     
 {{/isInherited}}

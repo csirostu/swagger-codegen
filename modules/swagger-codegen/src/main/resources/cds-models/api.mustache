@@ -9,6 +9,8 @@ import au.org.consumerdatastandards.api.common.models.Scope;
 import au.org.consumerdatastandards.support.data.Format;
 import au.org.consumerdatastandards.support.data.CustomAttribute;
 import au.org.consumerdatastandards.support.data.StringFormat;
+import au.org.consumerdatastandards.support.data.CustomAttributes;
+
 
 import {{modelPackage}}.*;
 
@@ -52,7 +54,10 @@ public interface {{classname}}  {
                 }
             )
         }{{/hasCdsScopes}}
-    )
+    ){{#hasCdsScopes}}
+    @CustomAttributes({ {{#cdsScopesLower}}
+            @CustomAttribute(name = "x-scopes", value = "{{.}}"){{#hasMore}}, {{/hasMore}}{{/cdsScopesLower}}
+    }){{/hasCdsScopes}}
     {{returnBaseType}}{{^returnBaseType}}Void{{/returnBaseType}} {{operationId}}({{#allParams}}
         @Param(        
              name = "{{paramQueryName}}",
@@ -60,8 +65,11 @@ public interface {{classname}}  {
              in = {{#isHeaderParam}}ParamLocation.HEADER{{/isHeaderParam}}{{#isPathParam}}ParamLocation.PATH{{/isPathParam}}{{#isQueryParam}}ParamLocation.QUERY{{/isQueryParam}}{{#isBodyParam}}ParamLocation.BODY{{/isBodyParam}}{{#defaultValue}},
              defaultValue = "{{{defaultValue}}}"{{/defaultValue}}{{#isRequired}},
              required = true{{/isRequired}}{{#isReference}},
-             reference = "{{referenceName}}"{{/isReference}}){{#cdsCustomAttributes}}
-        {{#cdsType}}@CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}}{{/cdsCustomAttributes}}{{#hasCdsType}}{{#isDateTimeString}}
+             reference = "{{referenceName}}"{{/isReference}}
+        ){{#cdsCustomAttributes}}
+        @CustomAttributes({
+        {{#cdsType}}    @CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}}
+        }){{/cdsCustomAttributes}}{{#hasCdsType}}{{#isDateTimeString}}
         @StringFormat(format = Format.DATE_TIME){{/isDateTimeString}}{{#isDateString}}
         @StringFormat(format = Format.DATE){{/isDateString}}{{#isAcnString}}
         @StringFormat(format = Format.ACN){{/isAcnString}}{{#isAbnString}}
@@ -75,8 +83,7 @@ public interface {{classname}}  {
         @StringFormat(format = Format.CURRENCY){{/isCurrencyString}}{{#isNaturalNumber}}
         @IntegerRange(min = 0){{/isNaturalNumber}}{{#isPositiveInteger}}
         @IntegerRange(min = 1)(Format.PositiveInteger){{/isPositiveInteger}}{{#isNegativeInteger}}
-        @IntegerRange(max = 0){{/isNegativeInteger}}{{/hasCdsType}}{{^hasCdsType}}{{#isString}}
-        @StringFormat(format = Format.ASCII){{/isString}}{{/hasCdsType}}
+        @IntegerRange(max = 0){{/isNegativeInteger}}{{/hasCdsType}}
         {{#isEnum}}Param{{datatypeWithEnum}}{{/isEnum}}{{^isEnum}}{{dataType}}{{/isEnum}} {{paramName}}{{#hasMore}}, {{/hasMore}}
     {{/allParams}});
 {{/subresourceOperation}}{{/operation}}

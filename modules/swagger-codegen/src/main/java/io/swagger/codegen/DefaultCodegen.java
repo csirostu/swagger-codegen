@@ -1731,6 +1731,10 @@ public class DefaultCodegen {
                 property.cdsCustomAttributes = true;
                 property.hasCdsType = true;
             }
+            
+            if(property.vendorExtensions.size() > 0) {
+                property.cdsCustomAttributes = true;
+            }
 
             // check if any validation rule defined
             if (property.pattern != null || property.minLength != null || property.maxLength != null)
@@ -2154,6 +2158,7 @@ public class DefaultCodegen {
             for (int i = 0; i < cdsScopes.size(); i++) {
                 String oneScope = cdsScopes.get(i);
                 op.cdsScopes.add(oneScope.toUpperCase());
+                op.cdsScopesLower.add(oneScope.toLowerCase());
                 op.hasCdsScopes = true;
             }
         }
@@ -2441,6 +2446,11 @@ public class DefaultCodegen {
                     p.cdsCustomAttributes = true;
                     p.hasCdsType = true;
                 }
+                
+                if(p.vendorExtensions.size() > 0) {
+                    p.cdsCustomAttributes = true;
+                }
+
 
                 // rename parameters to make sure all of them have unique names
                 if (ensureUniqueParams) {

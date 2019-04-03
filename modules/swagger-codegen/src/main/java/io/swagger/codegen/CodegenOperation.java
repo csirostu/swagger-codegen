@@ -44,6 +44,7 @@ public class CodegenOperation {
     public String operationIdLowerCase; // for markdown documentation
     public String operationIdCamelCase; // for class names
     public String operationIdSnakeCase;
+    public List<String> cdsScopesLower = new ArrayList<String>();
 
     /**
      * Check if there's at least one parameter
