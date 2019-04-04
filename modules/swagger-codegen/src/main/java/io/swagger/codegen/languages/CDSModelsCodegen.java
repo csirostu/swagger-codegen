@@ -14,6 +14,7 @@ import io.swagger.codegen.SupportingFile;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
+import io.swagger.models.parameters.Parameter;
 import io.swagger.util.Yaml;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
@@ -135,6 +136,11 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
         super.postProcessModelProperty(model, property);
         
         //LOGGER.warn("Data type of property is: " +  property.datatype);
+        
+        //if(property.baseName.equals("data")) {
+        //    model.isInline = true;
+        //}
+        
         
         if(property.datatype.equals("Meta") || property.datatype.equals("Links")) {
             model.isPaginated = false;

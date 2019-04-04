@@ -49,6 +49,7 @@ public class CodegenModel {
     //The type of the value from additional properties. Used in map like objects.
     public String additionalPropertiesType;
     public boolean hasInterfaces;
+    public boolean isInline;
 
     {
         // By default these are the same collections. Where the code generator supports inheritance, composed models

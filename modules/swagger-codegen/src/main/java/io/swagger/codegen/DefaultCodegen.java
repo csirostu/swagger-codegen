@@ -1329,6 +1329,11 @@ public class DefaultCodegen {
         m.externalDocs = model.getExternalDocs();
         m.vendorExtensions = model.getVendorExtensions();
         m.isAlias = typeAliases.containsKey(name);
+        
+        if(name.endsWith("_data")) {
+            m.isInline = true;
+        }
+        
 
         if (model instanceof ModelImpl) {
             ModelImpl modelImpl = (ModelImpl) model;
@@ -1491,6 +1496,7 @@ public class DefaultCodegen {
                 postProcessModelProperty(m, prop);
             }
         }
+        
         return m;
     }
 
@@ -2885,6 +2891,7 @@ public class DefaultCodegen {
                 p.isPrimitiveType = cp.isPrimitiveType;
                 p.isContainer = true;
                 p.isListContainer = true;
+                
 
                 // set boolean flag (e.g. isString)
                 setParameterBooleanFlagWithCodegenProperty(p, cp);
