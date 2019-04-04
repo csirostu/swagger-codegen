@@ -136,17 +136,16 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
         
         //LOGGER.warn("Data type of property is: " +  property.datatype);
         
-        if(model.name.contains("Response")) {
-            model.isResponse = true;
-        }
-
         if(property.datatype.equals("Meta") || property.datatype.equals("Links")) {
             model.isPaginated = false;
+            model.isResponse = true;
             property.isInherited = true;
         } else if(property.datatype.equals("MetaPaginated") || property.datatype.equals("LinksPaginated")) {
             model.isPaginated = true;
             property.isInherited = true;
+            model.isResponse = true;
         }
+        
         
         // Add imports for Jackson
         if (!BooleanUtils.toBoolean(model.isEnum)) {

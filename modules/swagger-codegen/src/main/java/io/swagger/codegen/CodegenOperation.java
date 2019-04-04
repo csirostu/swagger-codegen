@@ -45,6 +45,7 @@ public class CodegenOperation {
     public String operationIdCamelCase; // for class names
     public String operationIdSnakeCase;
     public List<String> cdsScopesLower = new ArrayList<String>();
+    public boolean isResponse;
 
     /**
      * Check if there's at least one parameter

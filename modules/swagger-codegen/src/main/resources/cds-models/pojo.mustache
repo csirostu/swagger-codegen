@@ -1,7 +1,9 @@
-{{#models}}{{#model}}
-@DataDefinition({{#hasInterfaces}}
-    allOf = { {{#interfaces}}{{.}}.class{{#hasMore}},{{/hasMore}}{{^hasMore}} } {{/hasMore}}{{/interfaces}}
-{{/hasInterfaces}})
+{{#models}}{{#model}}@DataDefinition({{#hasInterfaces}}
+    allOf = { {{#interfaces}}{{.}}.class{{^-last}}, {{/-last}}{{/interfaces}} }
+{{/hasInterfaces}}){{#vendorExtensions.x-conditional}}{{#-first}}@CustomAttributes({
+{{/-first}}    @CustomAttribute(name = "x-conditional", value = "{{{.}}}", multiple = true){{^-last}},
+{{/-last}}{{#-last}}
+}) {{/-last}}{{/vendorExtensions.x-conditional}}
 public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedResponse{{/isPaginated}}{{^isPaginated}}BaseResponse{{/isPaginated}}{{/isResponse}} {
         {{#vars}}
     {{#isEnum}}
@@ -23,7 +25,7 @@ public class {{classname}} {{#isResponse}}extends {{#isPaginated}}PaginatedRespo
     ){{#cdsCustomAttributes}}
     @CustomAttributes({
         {{#cdsType}}    @CustomAttribute(name = "x-type", value = "{{{cdsType}}}"){{/cdsType}}
-        }){{/cdsCustomAttributes}}{{#hasCdsType}}{{#isDateTimeString}} 
+    }){{/cdsCustomAttributes}}{{#hasCdsType}}{{#isDateTimeString}} 
     @StringFormat(format = Format.DATE_TIME){{/isDateTimeString}}{{#isDateString}}
     @StringFormat(format = Format.DATE){{/isDateString}}{{#isAcnString}}
     @StringFormat(format = Format.ACN){{/isAcnString}}{{#isAbnString}}

@@ -216,6 +216,7 @@ public class DefaultCodegen {
                 }
             }
         }
+        
         return objs;
     }
 
@@ -392,14 +393,14 @@ public class DefaultCodegen {
             return input;
         }
 
-        // remove \t, \n, \r
+        // replace \n and \r with escaped \n
         // replace \ with \\
         // replace " with \"
         // outter unescape to retain the original multi-byte characters
         // finally escalate characters avoiding code injection
         return escapeUnsafeCharacters(
                 StringEscapeUtils.unescapeJava(StringEscapeUtils.escapeJava(input).replace("\\/", "/"))
-                        .replaceAll("[\\t\\n\\r]", " ").replace("\\", "\\\\").replace("\"", "\\\""));
+                        .replace("\\", "\\\\").replace("\"", "\\\"").replaceAll("[\\n\\r]", "\\\\n"));
     }
 
     /**
@@ -2551,7 +2552,7 @@ public class DefaultCodegen {
         // TODO: fix error with resolved yaml/json generators in order to enable this
         // again.
         // configureDataForTestTemplate(op);
-
+        
         return op;
     }
 
@@ -2574,7 +2575,7 @@ public class DefaultCodegen {
         r.examples = toExamples(response.getExamples());
         r.jsonSchema = Json.pretty(response);
         r.vendorExtensions = response.getVendorExtensions();
-        addHeaders(response, r.headers);
+        addHeaders(response, r.headers);        
         r.hasHeaders = !r.headers.isEmpty();
 
         if (r.schema != null) {
@@ -2593,6 +2594,7 @@ public class DefaultCodegen {
                     r.baseType = cm.baseType;
                 }
             }
+           
             r.dataType = cm.datatype;
 
             if (Boolean.TRUE.equals(cm.isString) && Boolean.TRUE.equals(cm.isUuid)) {
