@@ -1,7 +1,9 @@
 /**
  * {{^description}}Gets or Sets {{{name}}}{{/description}}{{#description}}{{{description}}}{{/description}}
  */
-@DataDefinition()
+@DataDefinition(
+    description = "{{^description}}Gets or Sets {{{name}}}{{/description}}{{#description}}{{{description}}}{{/description}}",
+)
 public enum {{#datatypeWithEnum}}{{{.}}}{{/datatypeWithEnum}}{{^datatypeWithEnum}}{{{classname}}}{{/datatypeWithEnum}} {
 {{#allowableValues}}{{#enumVars}}
     {{{name}}}({{{value}}}){{^-last}},{{/-last}}{{#-last}};{{/-last}}{{/enumVars}}
