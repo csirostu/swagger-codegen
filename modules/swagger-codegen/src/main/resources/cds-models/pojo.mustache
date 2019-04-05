@@ -2,8 +2,8 @@
     allOf = { {{#interfaces}}{{.}}.class{{^-last}}, {{/-last}}{{/interfaces}} }{{#description}},{{/description}}{{/hasInterfaces}}{{#isInline}}
     referenced = false{{#description}},{{/description}}
 {{/isInline}}{{#description}}    description = "{{{description}}}"
-{{/description}}){{#vendorExtensions.x-conditional}}
-{{#-first}}@CustomAttributes({
+{{/description}})
+{{#vendorExtensions.x-conditional}}{{#-first}}@CustomAttributes({
 {{/-first}}    @CustomAttribute(name = "x-conditional", value = "{{{.}}}", multiple = true){{^-last}},
 {{/-last}}{{#-last}}
 }) {{/-last}}{{/vendorExtensions.x-conditional}}
