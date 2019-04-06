@@ -11,9 +11,12 @@ import io.swagger.codegen.CodegenProperty;
 import io.swagger.codegen.CodegenType;
 import io.swagger.codegen.DefaultCodegen;
 import io.swagger.codegen.SupportingFile;
+import io.swagger.models.ComposedModel;
+import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
+import io.swagger.models.parameters.Parameter;
 import io.swagger.util.Yaml;
 import org.apache.commons.lang3.BooleanUtils;
 import org.slf4j.Logger;
@@ -86,12 +89,12 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
     public void addOperationToGroup(String tag, String resourcePath, Operation operation, CodegenOperation co,
             Map<String, List<CodegenOperation>> operations) {
         String basePath = resourcePath;
-        
+
         if (tag.endsWith("ApIs")) {
             tag = tag.replaceAll("ApIs", "Api");
             co.subresourceOperation = false;
         } else {
-            if(tag.equals("Customer")) {
+            if (tag.equals("Customer")) {
                 tag = "CommonCustomerAPI";
             } else {
                 tag = "Banking" + tag + "API";
@@ -100,14 +103,13 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
         }
 
         List<CodegenOperation> opList = operations.get(tag);
-        
+
         if (opList == null) {
             opList = new ArrayList<CodegenOperation>();
             operations.put(tag, opList);
         }
-        
-        // LOGGER.warn("Tag is set to: " + tag);
 
+        // LOGGER.warn("Tag is set to: " + tag);
 
         // check for operationId uniqueness
 
@@ -131,22 +133,54 @@ public class CDSModelsCodegen extends AbstractJavaCodegen {
     }
 
     @Override
+    public void postProcessModelProperty(CodegenModel m, CodegenProperty prop, Model model) {
+        if (model instanceof ComposedModel) {
+            prop.isInherited = true;
+            ComposedModel myModel = (ComposedModel)model;
+            for (Model innerModel : ((ComposedModel) model).getAllOf()) {
+                if (innerModel.getProperties() != null) {
+                    for (String oneProperty : innerModel.getProperties().keySet()) {
+                        // LOGGER.warn("Processing " + oneProperty + " versus " + prop.baseName);
+                        if (prop.baseName.equals(oneProperty)) {
+                            prop.isInherited = false;
+                            // LOGGER.warn("Found property within innermodel of " + prop.name);
+                        }
+                    }
+                }
+
+            }
+        }
+        postProcessModelProperty(m, prop);
+
+    }
+
+    @Override
     public void postProcessModelProperty(CodegenModel model, CodegenProperty property) {
         super.postProcessModelProperty(model, property);
-        
-        //LOGGER.warn("Data type of property is: " +  property.datatype);
-        
-        if(property.datatype.equals("Meta") || property.datatype.equals("Links")) {
+
+        // LOGGER.warn("Data type of property is: " + property.datatype);
+
+        // if(property.baseName.equals("data")) {
+        // model.isInline = true;
+        // }
+
+        // LOGGER.warn(model.name + " interface " + model.hasInterfaces);
+        // LOGGER.warn("Property container type: " + property.containerType);
+//        if(model.hasInterfaces) {
+//            
+//            property.isInherited = true;
+//        }
+
+        if (property.datatype.equals("Meta") || property.datatype.equals("Links")) {
             model.isPaginated = false;
             model.isResponse = true;
             property.isInherited = true;
-        } else if(property.datatype.equals("MetaPaginated") || property.datatype.equals("LinksPaginated")) {
+        } else if (property.datatype.equals("MetaPaginated") || property.datatype.equals("LinksPaginated")) {
             model.isPaginated = true;
             property.isInherited = true;
             model.isResponse = true;
         }
-        
-        
+
         // Add imports for Jackson
         if (!BooleanUtils.toBoolean(model.isEnum)) {
             model.imports.add("JsonProperty");

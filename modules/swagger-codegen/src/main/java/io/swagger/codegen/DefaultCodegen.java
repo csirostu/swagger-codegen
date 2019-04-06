@@ -216,7 +216,7 @@ public class DefaultCodegen {
                 }
             }
         }
-        
+
         return objs;
     }
 
@@ -363,6 +363,14 @@ public class DefaultCodegen {
     // override to post-process any model properties
     @SuppressWarnings("unused")
     public void postProcessModelProperty(CodegenModel model, CodegenProperty property) {
+    }
+    
+
+    // override to post-process any model properties
+    @SuppressWarnings("unused")
+    public void postProcessModelProperty(CodegenModel m, CodegenProperty prop, Model model) {
+        // TODO Auto-generated method stub
+        
     }
 
     // override to post-process any parameters
@@ -1329,6 +1337,13 @@ public class DefaultCodegen {
         m.externalDocs = model.getExternalDocs();
         m.vendorExtensions = model.getVendorExtensions();
         m.isAlias = typeAliases.containsKey(name);
+        
+        //m.referenceName = model.getReference();
+        
+
+        if (name.endsWith("_data")) {
+            m.isInline = true;
+        }
 
         if (model instanceof ModelImpl) {
             ModelImpl modelImpl = (ModelImpl) model;
@@ -1341,6 +1356,7 @@ public class DefaultCodegen {
                 m.xmlNamespace = modelImpl.getXml().getNamespace();
                 m.xmlName = modelImpl.getXml().getName();
             }
+           
         }
 
         if (model instanceof ArrayModel) {
@@ -1361,9 +1377,22 @@ public class DefaultCodegen {
                 allProperties = new LinkedHashMap<String, Property>();
                 allRequired = new ArrayList<String>();
                 m.allVars = new ArrayList<CodegenProperty>();
+                
                 int modelImplCnt = 0; // only one inline object allowed in a ComposedModel
                 for (Model innerModel : ((ComposedModel) model).getAllOf()) {
-                    LOGGER.warn("Discovered composed model " + innerModel.getReference());
+                    //LOGGER.warn("Discovered composed model " + innerModel.getReference());
+                                        
+                    if(innerModel.getProperties() != null) {
+                        for(String oneProperty : innerModel.getProperties().keySet()) {
+                            LOGGER.warn("Found property of " + oneProperty + " in base model");
+                            for(int i = 0; i < m.vars.size(); i++) {
+                                LOGGER.warn("Processing: " + m.vars.get(i).name);
+                            }
+                            
+                        }
+                    }
+
+                    
                     if (innerModel instanceof ModelImpl) {
                         ModelImpl modelImpl = (ModelImpl) innerModel;
                         if (m.discriminator == null) {
@@ -1412,20 +1441,20 @@ public class DefaultCodegen {
                         addImport(m, interfaceRef);
                         if (allDefinitions != null) {
                             if (!supportsMixins) {
-                                //addProperties(properties, required, interfaceModel, allDefinitions);
+                                addProperties(properties, required, interfaceModel, allDefinitions);
                             }
                             if (supportsInheritance) {
-                                //addProperties(allProperties, allRequired, interfaceModel, allDefinitions);
+                                addProperties(allProperties, allRequired, interfaceModel, allDefinitions);
                             }
                         }
                     }
                 }
             }
-            
-            if(m.interfaces.size() > 0) {
+
+            if (m.interfaces.size() > 0) {
                 m.hasInterfaces = true;
             }
-
+            
             if (parent != null) {
                 String parentName = null;
                 if (parent instanceof RefModel) {
@@ -1488,11 +1517,13 @@ public class DefaultCodegen {
 
         if (m.vars != null) {
             for (CodegenProperty prop : m.vars) {
-                postProcessModelProperty(m, prop);
+                postProcessModelProperty(m, prop, model);
             }
         }
+
         return m;
     }
+
 
     /**
      * Recursively look for a discriminator in the interface tree
@@ -1657,17 +1688,8 @@ public class DefaultCodegen {
 
                 } else if (p.getFormat().equals("NaturalNumber")) {
                     property.isNaturalNumber = true;
-
+                    property.isString = false;
                     property.cdsType = "NaturalNumber";
-
-                } else if (p.getFormat().equals("ABNString")) {
-                    property.isAbnString = true;
-                    property.isString = false;
-                    property.cdsType = "ABNString";
-                } else if (p.getFormat().equals("ACNString")) {
-                    property.isAcnString = true;
-                    property.isString = false;
-                    property.cdsType = "ACNString";
                 } else if (p.getFormat().equals("NaturalNumber")) {
                     property.isNaturalNumber = true;
                     property.cdsType = "NaturalNumber";
@@ -1684,44 +1706,50 @@ public class DefaultCodegen {
                     property.isDateTimeString = true;
                     property.isString = false;
                     property.cdsType = "DateTimeString";
-
+                } else if (p.getFormat().equals("DateString")) {
+                    property.isDateString = true;
+                    property.isString = false;
+                    property.cdsType = "DateString";
                 } else if (p.getFormat().equals("TimeString")) {
                     property.isTimeString = true;
                     property.isString = false;
                     property.cdsType = "TimeString";
 
-                } else if (p.getFormat().equals("RateString")) {
-                    property.isRateString = true;
-                    property.cdsType = "RateString";
-
-                } else if (p.getFormat().equals("AmountString")) {
-                    property.isAmountString = true;
-                    property.isString = false;
-                    property.cdsType = "AmountString";
-
-                } else if (p.getFormat().equals("CurrencyString")) {
-                    property.isCurrencyString = true;
-                    property.isString = false;
-                    property.cdsType = "CurrencyString";
-                } else if (p.getFormat().equals("DateString")) {
-                    property.isDateString = true;
-                    property.isString = false;
-                    property.cdsType = "DateString";
-
-                } else if (p.getFormat().equals("MaskedPANString")) {
-                    property.isMaskedPANString = true;
-                    property.isString = false;
-                    property.cdsType = "MaskedPANString";
-
-                } else if (p.getFormat().equals("MaskedAccountString")) {
-                    property.isMaskedAccountString = true;
-                    property.isString = false;
-                    property.cdsType = "MaskedAccountString";
-
                 } else if (p.getFormat().equals("URIString")) {
                     property.isURIString = true;
                     property.isString = false;
                     property.cdsType = "URIString";
+
+                } else if (p.getFormat().equals("RateString")) {
+//                    property.isRateString = true;
+//                    property.isString = false;
+                    property.cdsType = "RateString";
+
+                } else if (p.getFormat().equals("AmountString")) {
+//                    property.isAmountString = true;
+//                    property.isString = false;
+                    property.cdsType = "AmountString";
+                } else if (p.getFormat().equals("ABNString")) {
+//                    property.isAbnString = true;
+//                    property.isString = false;
+                    property.cdsType = "ABNString";
+                } else if (p.getFormat().equals("ACNString")) {
+//                    property.isAcnString = true;
+//                    property.isString = false;
+                    property.cdsType = "ACNString";
+                } else if (p.getFormat().equals("CurrencyString")) {
+//                    property.isCurrencyString = true;
+//                    property.isString = false;
+                    property.cdsType = "CurrencyString";
+                } else if (p.getFormat().equals("MaskedPANString")) {
+//                    property.isMaskedPANString = true;
+//                    property.isString = false;
+                    property.cdsType = "MaskedPANString";
+
+                } else if (p.getFormat().equals("MaskedAccountString")) {
+//                    property.isMaskedAccountString = true;
+//                    property.isString = false;
+                    property.cdsType = "MaskedAccountString";
                 } else {
                     property.cdsCustomAttributes = false;
                 }
@@ -1731,8 +1759,8 @@ public class DefaultCodegen {
                 property.cdsCustomAttributes = true;
                 property.hasCdsType = true;
             }
-            
-            if(property.vendorExtensions.size() > 0) {
+
+            if (property.vendorExtensions.size() > 0) {
                 property.cdsCustomAttributes = true;
             }
 
@@ -1741,7 +1769,7 @@ public class DefaultCodegen {
                 property.hasValidation = true;
 
             property.isString = true;
-            
+
             if (sp.getEnum() != null) {
                 List<String> _enum = sp.getEnum();
                 property._enum = _enum;
@@ -2356,20 +2384,20 @@ public class DefaultCodegen {
         if (parameters != null) {
             for (Parameter param : parameters) {
                 CodegenParameter p = fromParameter(param, imports);
-                
-                for(Map.Entry<String, Parameter> entry: swagger.getParameters().entrySet()) {
-                    if(entry.getValue().getName().equals(p.baseName)) {
+
+                for (Map.Entry<String, Parameter> entry : swagger.getParameters().entrySet()) {
+                    if (entry.getValue().getName().equals(p.baseName)) {
                         p.isReference = true;
                         p.referenceName = entry.getKey();
                     }
-                    
+
                 }
-                
-                if(param instanceof RefParameter) {
+
+                if (param instanceof RefParameter) {
                     LOGGER.warn("Found reference parameter " + p.toString());
 
                 }
-               
+
                 if (p.dataFormat != null) {
                     if (p.dataFormat.equals("ASCIIString")) {
                         p.isASCIIString = true;
@@ -2378,67 +2406,53 @@ public class DefaultCodegen {
                     } else if (p.dataFormat.equals("NaturalNumber")) {
                         p.isNaturalNumber = true;
                         p.cdsType = "NaturalNumber";
-                    } else if (p.dataFormat.equals("ABNString")) {
-                        p.isAbnString = true;
-                        p.isString = false;
-
-                        p.cdsType = "ABNString";
-                    } else if (p.dataFormat.equals("ACNString")) {
-                        p.isAcnString = true;
-                        p.isString = false;
-
-                        p.cdsType = "ACNString";
                     } else if (p.dataFormat.equals("PositiveInteger")) {
                         p.isPositiveInteger = true;
                         p.cdsType = "PositiveInteger";
-
                     } else if (p.dataFormat.equals("NegativeInteger")) {
                         p.isNegativeInteger = true;
                         p.cdsType = "NegativeInteger";
                     } else if (p.dataFormat.equals("DateString")) {
                         p.isDateString = true;
                         p.isString = false;
-
                         p.cdsType = "DateString";
                     } else if (p.dataFormat.equals("DateTimeString")) {
                         p.isDateTimeString = true;
                         p.isString = false;
-
                         p.cdsType = "DateTimeString";
-                    } else if (p.dataFormat.equals("RateString")) {
-                        p.isRateString = true;
-                        p.isString = false;
-
-                        p.cdsType = "RateString";
-
-                    } else if (p.dataFormat.equals("CurrencyString")) {
-                        p.isCurrencyString = true;
-                        p.isString = false;
-
-                        p.cdsType = "CurrencyString";
-
-                    } else if (p.dataFormat.equals("AmountString")) {
-                        p.isAmountString = true;
-                        p.isString = false;
-                        p.cdsType = "AmountString";
-
-                    } else if (p.dataFormat.equals("MaskedPANString")) {
-                        p.isMaskedPANString = true;
-                        p.isString = false;
-
-                        p.cdsType = "MaskedPANString";
-
-                    } else if (p.dataFormat.equals("MaskedAccountString")) {
-                        p.isMaskedAccountString = true;
-                        p.isString = false;
-
-                        p.cdsType = "MaskedAccountString";
-
                     } else if (p.dataFormat.equals("URIString")) {
                         p.isURIString = true;
                         p.isString = false;
-
                         p.cdsType = "URIString";
+                    } else if (p.dataFormat.equals("ABNString")) {
+//                      p.isAbnString = true;
+//                      p.isString = false;
+                        p.cdsType = "ABNString";
+                    } else if (p.dataFormat.equals("ACNString")) {
+//                      p.isAcnString = true;
+//                      p.isString = false;
+                        p.cdsType = "ACNString";
+                    } else if (p.dataFormat.equals("RateString")) {
+//                        p.isRateString = true;
+//                        p.isString = false;
+                        p.cdsType = "RateString";
+
+                    } else if (p.dataFormat.equals("CurrencyString")) {
+//                        p.isCurrencyString = true;
+//                        p.isString = false;
+                        p.cdsType = "CurrencyString";
+                    } else if (p.dataFormat.equals("AmountString")) {
+//                        p.isAmountString = true;
+//                        p.isString = false;
+                        p.cdsType = "AmountString";
+                    } else if (p.dataFormat.equals("MaskedPANString")) {
+//                        p.isMaskedPANString = true;
+//                        p.isString = false;
+                        p.cdsType = "MaskedPANString";
+                    } else if (p.dataFormat.equals("MaskedAccountString")) {
+//                        p.isMaskedAccountString = true;
+//                        p.isString = false;
+                        p.cdsType = "MaskedAccountString";
                     }
                 }
 
@@ -2446,11 +2460,10 @@ public class DefaultCodegen {
                     p.cdsCustomAttributes = true;
                     p.hasCdsType = true;
                 }
-                
-                if(p.vendorExtensions.size() > 0) {
+
+                if (p.vendorExtensions.size() > 0) {
                     p.cdsCustomAttributes = true;
                 }
-
 
                 // rename parameters to make sure all of them have unique names
                 if (ensureUniqueParams) {
@@ -2552,7 +2565,7 @@ public class DefaultCodegen {
         // TODO: fix error with resolved yaml/json generators in order to enable this
         // again.
         // configureDataForTestTemplate(op);
-        
+
         return op;
     }
 
@@ -2575,7 +2588,7 @@ public class DefaultCodegen {
         r.examples = toExamples(response.getExamples());
         r.jsonSchema = Json.pretty(response);
         r.vendorExtensions = response.getVendorExtensions();
-        addHeaders(response, r.headers);        
+        addHeaders(response, r.headers);
         r.hasHeaders = !r.headers.isEmpty();
 
         if (r.schema != null) {
@@ -2594,7 +2607,7 @@ public class DefaultCodegen {
                     r.baseType = cm.baseType;
                 }
             }
-           
+
             r.dataType = cm.datatype;
 
             if (Boolean.TRUE.equals(cm.isString) && Boolean.TRUE.equals(cm.isUuid)) {
