@@ -1726,28 +1726,28 @@ public class DefaultCodegen {
                     property.cdsType = "RateString";
 
                 } else if (p.getFormat().equals("AmountString")) {
-//                    property.isAmountString = true;
+                    property.isAmountString = true;
 //                    property.isString = false;
                     property.cdsType = "AmountString";
                 } else if (p.getFormat().equals("ABNString")) {
-//                    property.isAbnString = true;
+                    property.isAbnString = true;
 //                    property.isString = false;
                     property.cdsType = "ABNString";
                 } else if (p.getFormat().equals("ACNString")) {
-//                    property.isAcnString = true;
+                    property.isAcnString = true;
 //                    property.isString = false;
                     property.cdsType = "ACNString";
                 } else if (p.getFormat().equals("CurrencyString")) {
-//                    property.isCurrencyString = true;
+                    property.isCurrencyString = true;
 //                    property.isString = false;
                     property.cdsType = "CurrencyString";
                 } else if (p.getFormat().equals("MaskedPANString")) {
-//                    property.isMaskedPANString = true;
+                    property.isMaskedPANString = true;
 //                    property.isString = false;
                     property.cdsType = "MaskedPANString";
 
                 } else if (p.getFormat().equals("MaskedAccountString")) {
-//                    property.isMaskedAccountString = true;
+                    property.isMaskedAccountString = true;
 //                    property.isString = false;
                     property.cdsType = "MaskedAccountString";
                 } else {
