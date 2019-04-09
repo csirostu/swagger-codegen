@@ -1721,7 +1721,7 @@ public class DefaultCodegen {
                     property.cdsType = "URIString";
 
                 } else if (p.getFormat().equals("RateString")) {
-//                    property.isRateString = true;
+                    property.isRateString = true;
 //                    property.isString = false;
                     property.cdsType = "RateString";
 
